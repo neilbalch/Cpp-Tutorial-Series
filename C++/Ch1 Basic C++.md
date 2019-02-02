@@ -37,9 +37,11 @@ The third line calls the `std::cout` function, which prints the text Hello World
 ```shell
 $ ./HelloWorld
 Hello World$
+```
 
 The fact that the prompt is now on the same line as the text we printed is not good, and when we add the std::endl, the output looks like this:
 
+```shell
 $ ./HelloWorld
 Hello World
 $
@@ -78,7 +80,7 @@ int main() {
 ```
 
 The first line we added, `#include <string>`, includes the standard library that allows us to use string variables. In the main function, we first print out the question to the user, declare a string variable called name, take the input the user gave and save it into the name variable, and then print the name variable out to the screen.
-If you compile and run this program again (*with this command: g++ -g [FILEPATH]; ./a.out*), you should see output that looks like this:
+If you compile and run this program again (*with this command: `g++ -g [FILEPATH]; ./a.out`*), you should see output that looks like this:
 
 ```shell
 $ ./a.out
@@ -130,9 +132,11 @@ $ ./a.out
 Hello World! What is your name? Neil
 Hello, Neil!
 $
+```
 
-OR
+***OR***
 
+```shell
 $ ./a.out
 Hello World! What is your name? Trevor
 Hey! I really like your name, Trevor!
