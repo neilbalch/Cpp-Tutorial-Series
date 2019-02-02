@@ -1,4 +1,4 @@
-#TODO
+# TODO
 
 - Advanced C++ Compilation
   - Build Systems
@@ -6,7 +6,7 @@
 - C++ std library features
   - fstream (https://github.com/neilbalch/FRC971-Cpp/blob/master/SimpleKalmanFilter.cc)
   - vector
-  - https://github.com/neilbalch/FRC971-Cpp/blob/master/MultithreadingExample.cc
+  - Multithreading https://github.com/neilbalch/FRC971-Cpp/blob/master/MultithreadingExample.cc
     - thread
     - mutex
 - Language features
@@ -21,6 +21,7 @@
   - Stack vs. Heap allocation
   - Template parameters
   - Lambdas and anynomous function pointers
+  - productive uses of empty scopes
 - Linked list (https://github.com/neilbalch/FRC971-Cpp/tree/master/LinkedList)
   - singly linked list
   - doubly linked list
