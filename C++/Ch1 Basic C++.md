@@ -2,15 +2,23 @@
 
 ## 1.0: Guide to the Universe
 
-We recommend opening the Document Outline sidebar (Tools → Document Outline) while reading this documentation, as each section is marked there for easy access for skipping around and resuming where you left off.
-
 Complete C++ documentation can be found at the sites [en.cppreference.com/w](http://en.cppreference.com/w/) and [cplusplus.com](http://www.cplusplus.com/). The search tools on these sites work well when you know what you are looking for, so searching on Google and then clicking links to these sites is the option most likely to return a positive result. However, to a newer C++ programmer, the site can seem quite daunting, so we will try to provide a basic understanding here. In addition to this, the YouTube channel [TheCherno has an excellent playlist on fundamental to advanced C++ topics](youtube.com/watch?v=18c3MTX0PK0&list=PLlrATfBNZ98dudnM48yfGUldqGD0S4FFb) that we highly recommend for anyone who wants to learn more about tricky topics explained in an understandable manner.
 
 If you don’t want to set up a code environment on the terminal yet, you can always practice C++ with [cpp.sh](www.cpp.sh) or a similar web based C++ compiler. The only caveat to this approach is that there is no easy way to link multiple files together, and your programs would need to be in one file.
 
+### Style Guides
+
+When programming in a team setting, (*or even individually*) it is best practice to follow a set of common formatting guidelines to ensure a consistent look and feel, called a style guide. By far, the most common for C++ is the the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html). This document describes how to properly format and write easily comprehensible code in a way that is consistent, used internally by Google in their source code and externally by many many other organisations and teams. It does appear to be a very scary and long document; I mean just take a look at how small the scroll nubbin gets when viewing!
+
+But really, it isn’t *that* scary in actuality. Most of the rules will become second nature to you once you begin to write code for the team and get comments on it. In general, a good rule of thumb is to make your code look like the code that surrounds it. For the most part, unless you love reading endless quantities of rules, just know it exists and that many programmers follow the rules in it.
+
 ## 1.1: What is C++?
 
 Well, according to Wikipedia, [“*C++ is a general-purpose programming language*”](https://en.wikipedia.org/wiki/General-purpose_programming_language). If that satisfies you, then you can stop reading, but if not, the rest of this section will address that in more detail. C++ is an [object-oriented language](https://en.wikipedia.org/wiki/Object-oriented_programming), meaning that most all of the things one uses when writing a program in C++ are objects. These usually take the form of *classes and structs*, which organise code into easily reusable blocks, which in of themselves encapsulate more specific functions that do stuff, and variables that store data.
+
+In addition, C++ (*its parent language, C, and derivative langiages such as C#*) are highly low-level languages, meaning that writing in C++ sometimes requires more advanced knoledge regarding how a computer functions internally, such as how memory storage works. However, this also means that unlike more abstracted languages, such as Java, Python, JavaScrpt, etc., C++ is incredibly responsive and is nearly always used in applications where quick and responsive programs are a requirement. Such applications include AAA games, robotics, control systems and much more.
+
+In fact, many other languages compile down to C++ code when run because of its inherently quicker operations. Many compilers for other languages (*namely [Java](https://stackoverflow.com/questions/1220914/in-which-language-are-the-java-compiler-and-jvm-written) and [Python](https://softwareengineering.stackexchange.com/questions/20988/why-is-python-written-in-c-and-not-in-c)*) are also written in C or C++ for the same reasons.
 
 C++ source files will most often take the form of `.cpp`, `.cc` and `.h` files. The first two, `.cpp` and `.cc` are source files, which contain the code that actually performs actions, and `.h` (*header*) files containing a list of functions and classes that will be implemented in the `.cc` file of the same name.
 
@@ -51,7 +59,9 @@ Much better! Finally, a semicolon is added on the end of the line to tell the co
 
 ### Compiling and Running the Program
 
-Great, now we have written our program, but how do we run it? Well, as long as you are using a bash terminal (*Mac, Linux, or WSL on Windows*) you can use `g++` as a compiler. [This video on the YouTube channel Frame of Essence](https://www.youtube.com/watch?v=QXjU9qTsYCc) does a good job at describing what a compiler does. It is a good watch if you don’t already know what one does. (*It even uses C++ as an example!*)
+Great, now we have written our program, but how do we run it? Well, as long as you are using a bash terminal (*Mac, Linux, or WSL on Windows*) you can use `g++` as a compiler. If you are on Windows and would prefer not to install WSL (*Windows Subsystem for Linux*), you can install and configure [MinGW](http://mingw.org/), but you're kinda on your own here because I don't want to explain it and all of its nuances. (*and the instructions for compilation and running the program are going to differ slightly*)
+
+[This video on the YouTube channel Frame of Essence](https://www.youtube.com/watch?v=QXjU9qTsYCc) does a good job at describing what a compiler does. It is a good watch if you don’t already know what one does. (*It even uses C++ as an example!*)
 
 Figure out how to install `g++` on your terminal. (*Doing a google search for “How to install g++ on [Your OS Here]” is a good start*) Once you have it, you can run your program by typing:
 
