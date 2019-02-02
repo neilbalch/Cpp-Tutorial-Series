@@ -1,2 +1,8 @@
 # Tutorials-TM
-Tutorials™
+
+Repository for Tutorials™ lesson resources
+
+## Index
+
+- `C++/`: @neilbalch's C++ Lessons
+  - `C++/Ch1 Basic C++.md`
