@@ -1,0 +1,27 @@
+#TODO
+
+- Advanced C++ Compilation
+  - Build Systems
+    - Bazel
+- C++ std library features
+  - fstream (https://github.com/neilbalch/FRC971-Cpp/blob/master/SimpleKalmanFilter.cc)
+  - vector
+  - https://github.com/neilbalch/FRC971-Cpp/blob/master/MultithreadingExample.cc
+    - thread
+    - mutex
+- Language features
+  - multiline comments
+  - default parameters
+  - constructor/desctructor
+    - initialization lists (https://www.cprogramming.com/tutorial/initialization-lists-c++.html)
+  - Pointers
+    - Raw pointers
+    - pointers vs. references
+    - Smart pointers
+  - Stack vs. Heap allocation
+  - Template parameters
+  - Lambdas and anynomous function pointers
+- Linked list (https://github.com/neilbalch/FRC971-Cpp/tree/master/LinkedList)
+  - singly linked list
+  - doubly linked list
+  - iterator linked list
