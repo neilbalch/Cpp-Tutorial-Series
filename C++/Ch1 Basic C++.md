@@ -8,15 +8,15 @@ If you don’t want to set up a code environment on the terminal yet, you can al
 
 ### Style Guides
 
-When programming in a team setting, (*or even individually*) it is best practice to follow a set of common formatting guidelines to ensure a consistent look and feel, called a style guide. By far, the most common for C++ is the the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html). This document describes how to properly format and write easily comprehensible code in a way that is consistent, used internally by Google in their source code and externally by many many other organisations and teams. It does appear to be a very scary and long document; I mean just take a look at how small the scroll nubbin gets when viewing!
+When programming in a team setting, (*or even individually*) it is best practice to follow a set of common formatting guidelines to ensure a consistent look and feel, called a style guide. By far, the most common for C++ is the the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html). This document describes how to properly format and write easily comprehensible code in a way that is consistent, used internally by Google in their source code and externally by many many other organizations and teams. It does appear to be a very scary and long document; I mean just take a look at how small the scroll nubbin gets when viewing!
 
 But really, it isn’t *that* scary in actuality. Most of the rules will become second nature to you once you begin to write code for the team and get comments on it. In general, a good rule of thumb is to make your code look like the code that surrounds it. For the most part, unless you love reading endless quantities of rules, just know it exists and that many programmers follow the rules in it.
 
 ## 1.1: What is C++?
 
-Well, according to Wikipedia, [“*C++ is a general-purpose programming language*”](https://en.wikipedia.org/wiki/General-purpose_programming_language). If that satisfies you, then you can stop reading, but if not, the rest of this section will address that in more detail. C++ is an [object-oriented language](https://en.wikipedia.org/wiki/Object-oriented_programming), meaning that most all of the things one uses when writing a program in C++ are objects. These usually take the form of *classes and structs*, which organise code into easily reusable blocks, which in of themselves encapsulate more specific functions that do stuff, and variables that store data.
+Well, according to Wikipedia, [“*C++ is a general-purpose programming language*”](https://en.wikipedia.org/wiki/General-purpose_programming_language). If that satisfies you, then you can stop reading, but if not, the rest of this section will address that in more detail. C++ is an [object-oriented language](https://en.wikipedia.org/wiki/Object-oriented_programming), meaning that most all of the things one uses when writing a program in C++ are objects. These usually take the form of *classes and structs*, which organize code into easily reusable blocks, which in of themselves encapsulate more specific functions that do stuff, and variables that store data.
 
-In addition, C++ (*its parent language, C, and derivative langiages such as C#*) are highly low-level languages, meaning that writing in C++ sometimes requires more advanced knoledge regarding how a computer functions internally, such as how memory storage works. However, this also means that unlike more abstracted languages, such as Java, Python, JavaScrpt, etc., C++ is incredibly responsive and is nearly always used in applications where quick and responsive programs are a requirement. Such applications include AAA games, robotics, control systems and much more.
+In addition, C++ (*its parent language, C, and derivative languages such as C#*) are highly low-level languages, meaning that writing in C++ sometimes requires more advanced knowledge regarding how a computer functions internally, such as how memory storage works. However, this also means that unlike more abstracted languages, such as Java, Python, JavaScript, etc., C++ is incredibly responsive and is nearly always used in applications where quick and responsive programs are a requirement. Such applications include AAA games, robotics, control systems and much more.
 
 In fact, many other languages compile down to C++ code when run because of its inherently quicker operations. Many compilers for other languages (*namely [Java](https://stackoverflow.com/questions/1220914/in-which-language-are-the-java-compiler-and-jvm-written) and [Python](https://softwareengineering.stackexchange.com/questions/20988/why-is-python-written-in-c-and-not-in-c)*) are also written in C or C++ for the same reasons.
 
@@ -111,7 +111,20 @@ if (condition) {
 }
 ```
 
-The program will stop when it gets to an if statement, check to see if the condition (*which must evaluate to a boolean value, i.e. true or false*) is true, and if it is, it will run the code inside the `// Do something` section, and if it isn’t true (*false*) it will run the code in the `// Do something else` section. When you see a `//` in C++, it means that the rest of the line is a comment, which tells the compiler not to run that line. We can implement this in our program to decide if we should congratulate the user for being a Trevor. Modify your program to look like this:
+The program will stop when it gets to an if statement, check to see if the condition (*which must evaluate to a boolean value, i.e. true or false*) is true, and if it is, it will run the code inside the `// Do something` section, and if it isn’t true (*false*) it will run the code in the `// Do something else` section.
+
+When you see a `//` in C++, it means that the rest of the line is a comment, which tells the compiler not to run that line. A multi-line comment (*also applicable in cases where the endpoints of a commented section need to be controlled, such as comments within a line*) is created with `/*` and terminated with `*/`. For example:
+
+```C++
+This code would be run
+/*But not this*/
+
+/*
+And certainly not this.
+*/
+```
+
+We can implement the `if` statement` in our program to decide if we should congratulate the user for being a Trevor. Modify your program to look like this:
 
 ```C++
 #include <iostream>
