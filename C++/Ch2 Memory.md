@@ -12,9 +12,9 @@ Later on in the journey through C++, we'll learn about the CPU's own super high 
 
 It is convenient (*and mostly correct*) to think of the RAM as being a list of binary (*0 or 1*) digits in byte groups, each entry organized by a corresponding address, used for reading and writing data to the right places.
 
-| Address  |   Data   |
-|---------:|:---------|
-| 00000000 | 10001r00 |
+|  Address | Data     |
+| -------: | :------- |
+| 00000000 | 10001100 |
 | 00000001 | 01010010 |
 | 00000010 | 01000100 |
 | 00000011 | 01101000 |
