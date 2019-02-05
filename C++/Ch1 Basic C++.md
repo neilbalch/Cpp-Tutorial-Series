@@ -69,7 +69,7 @@ Figure out how to install `g++` on your terminal. (*Doing a google search for â€
 g++ -g [FILEPATH] && ./a.out
 ```
 
-into your terminal to compile and run the program. With luck, you should see something like the example output above, provided that there are no syntax errors in your code.
+into your terminal to compile and run the program. `g++` is the command to compile the program located at `[FILEPATH]`, outputting a compiled binary in the current working directory called `a.out`. `./a.out` runs the compiled binary, but the double ampersand makes sure that it is only run if the compilation didn't result in any errors. With luck, you should see something like the example output above, provided that there are no syntax errors in your code.
 
 ### Letâ€™s Have Some Fun
 
