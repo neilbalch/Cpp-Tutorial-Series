@@ -12,17 +12,11 @@
     - thread
     - mutex
 - Language features
-  - ~~multiline comments~~
   - default parameters
-  - constructor/desctructor
+  - constructor/destructor
     - initialization lists (https://www.cprogramming.com/tutorial/initialization-lists-c++.html)
-  - Pointers
-    - Raw pointers
-    - ~~pointers vs. references~~
-    - ~~Smart pointers~~
-  - ~~Stack vs. Heap allocation~~
   - Template parameters
-  - Lambdas and anynomous function pointers
+  - Lambdas and anonymous function pointers
   - productive uses of empty scopes
   - Enumerations
   - ? operator (cover when convenient)
@@ -36,7 +30,7 @@
 
 - Ch2: Memory
   - ~~Memory allocation (Stack and heap)~~
-  - Pointers
+  - ~~Pointers~~
     - ~~Raw Pointers and Smart Pointers~~
     - ~~References~~
   - Linked List example

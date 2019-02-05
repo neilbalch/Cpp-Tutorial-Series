@@ -156,4 +156,593 @@ std::unique_ptr<int> b = std::move(ptr); // Works
 
 ## 2.4 Linked List example
 
-TODO(Neil): Make this from this: https://github.com/neilbalch/FRC971-Cpp/blob/master/LinkedList/linked_list.cc
+Our programming application of memory in this chapter is going to be creating a singly-linked list class.
+
+Linked lists are a fundamental concept in programming, no matter what language. Their concept is rather simple, but detailed and nuanced in the implementation. They store lists of data.
+
+### Theory
+
+Linked lists are made up of nodes, each one storing on object and a pointer to the next node. (*in double-linked lists, the node also stores the pointer to the previous node*) If you think about how that paradigm works, it is actually a pretty stable way to store a large amount of information that changes in length, which would make it unsuitable for storing in an array. (*which must maintain a fixed size*) So... in a more graphical form:
+
+Singly linked list:
+
+- Node 1:
+  - Object
+  - Pointer: Node 2
+- Node 2:
+  - Object
+  - Pointer: Node 3
+- Node 3:
+  - Object
+  - Pointer: nullptr
+
+Figure 2.4.1: Graphical representation of a singly-linked list
+
+The last node points to `nullptr`, as a sort of termination pointer to signal to the program that there are no more nodes past Node 3.
+
+We're going to make the linked list work first with integer data types, and then make use of C++ templates to generalize the code to work with all data types.
+
+First up, we need to imagine the API (*Application Programming Interface*) of this singly-linked list class, or what functions the users of our class can call. Let's make a list:
+
+- `SinglyLinkedList`
+  - `void push_front(object)`
+  - `void push_back(object)`
+  - `void pop_front()`
+  - `void pop_back()`
+  - `void list_nodes()`
+
+The names of these functions should be fairly self-explanatory, after all, that is the point of an API. `push_front` will push a new node onto the front of the list (*i.e. before Node 1*), `push_back` will push a new node onto the back of the list (*i.e. after the last node*), and `pop_front` and `pop_back` will remove the node at the front or back of the list respectively.
+
+### Beginnings
+
+The first task is to create a code representation of our node object, which can be easily done with a `struct`:
+
+```C++
+struct Item {
+  int value;
+  Item* next = nullptr;
+}
+```
+
+This is a simple struct containing a value variable to store the integer and a pointer to the next item in the list, which is initially set to nullptr.
+
+Next, let's make a function to automate the instantiation and creation of an `Item` object.
+
+```C++
+Item* make_node(int value) {
+  // Create a new Item on the heap
+  Item* node = new Item();
+
+  // Give the new node the proper value
+  node->value = value;
+
+  return node;
+}
+```
+
+First, we use a pointer and the `new` keyword to create a new `Item` object on the heap. Then, we use the [syntactic sugar](https://en.wikipedia.org/wiki/Syntactic_sugar) (*shortcut or macro*) "`->`" to dereference `node` and assign the `value` attribute. The same line could be rearranged to a more familiar syntax:
+
+```C++
+(*node).value = value;
+```
+
+but the `->` is shorter and easier to type, plus it is harder to mess up by forgetting the parentheses. Finally, we return a raw pointer the completed node object.
+
+We are now ready to begin creating the linked list class. Here is a template with which we will start:
+
+```C++
+#include <iostream>
+
+class SinglyLinkedList {
+ public:
+  // Functions will go here
+ private:
+  // Item template for the singly linked list
+  struct Item {
+    int value;
+    Item* next = nullptr;
+  };
+
+  // Helper for making a node item from a value
+  Item* make_node(int value) {
+    // Make a new node
+    Item* node = new Item();
+    // Assign the new node the given value
+    node->value = value;
+
+    return node;
+  }
+
+  // HEAD of the singly linked list
+  Item* head = nullptr;
+};
+```
+
+The new addition, the private `Item*` called `head`, is incredibly important, because it will contain a pointer to the first, or head, item of the list. Without it, the program will have no way of keeping track of which item is at the top. It'll start out pointing to `nullptr` for now. The `iostream` header is included to provide support for `std::cout`, a function that we'll later use.
+
+### Core Functionality
+
+Next, let's write and implement the four functions we need for the API, starting with the simplest, `push_front`. First, let's decide on how this function will operate.
+
+The behavior we need from it is to create a new node, and then put it on the front of the list. We can do this by setting it's `next` attribute to the current `head` pointer and then setting the  `head` pointer equal to the new node. Thus, we will have "shifted" the previous head node down by one, the desired behavior.
+
+```C++
+void push_front(int value) {
+  // Create a new node
+  Item* node = make_node(value);
+  // Set the next item of the new node to the current head node
+  node->next = head;
+  // Set the new node to be the head node
+  head = node;
+}
+```
+
+Next, let's work on the `pop_front` function, which works on a very similar principle. We need to get rid of the first item in the list. We can do this by setting the `head` pointer to the `next` attribute of the current `head` item. But, in order for us to be good memory stewards, we need to clean up the "popped" item first, which we can do by temporarily storing the next item temporarily. Whew! Let's see if this makes more sense in code:
+
+```C++
+void pop_front() {
+  if(head == nullptr) {
+    // Return early, there isn't anything to pop
+    return;
+  }
+  // Temporarily store the pointer to the next item in the list
+  Item* temp_head = head->next;
+  // Clean up the current head element
+  delete head;
+  // Reset head
+  head = temp_head;
+}
+```
+
+Pushing to and popping from the back of the list is more complicated because we first need to locate the end of the list. This can be done with a while loop that keeps iterating through the list until the next attribute is equal to `nullptr`, the terminating state. Let's write `push_back` first.
+
+What we need to do is create a new node, then find the last node in the list and set its `next`attribute to be the newly created node. Let's see how this works in code:
+
+```C++
+void push_back(int value) {
+  // Create a new node
+  Item* node = make_node(value);
+
+  // If the list is empty, this is really easy
+  if(head == nullptr) {
+    head = node;
+  } else {
+    // Make a copy of the head pointer that we can modify
+    Item* temp_head = head;
+    // Iterate through the list until we reach the end
+    while(temp_head->next != nullptr) {
+      temp_head = temp_head->next;
+    }
+
+    // Make the last item in the list point to the new node
+    temp_head->next = node;
+
+    // Clean up the temp_head pointer
+    temp_head = nullptr;
+    delete temp_head;
+  }
+}
+```
+
+In this instance, we aren't able to clean up the `temp_head` like we usually pointer because it is in a unique position.  By the end of its usable life, `temp_head` points to the last item in the list, so if we call `delete` on it to remove it, it will take the end item with it, thus removing the node we just added AND wrecking the linked list by getting rid of the `nullptr` marker that allows the rest of the program to tell when it is at the end of the list. Doubly bad. Instead, we first make the `temp_head` pointer point to nothing, and then delete it.
+
+Now let's finish up the operational functions by creating `pop_back`. For this to work, we need to again find the end of the list and get rid of the last item. Then we can delete the the last item. Let's see this in code:
+
+``` C++
+void pop_back() {
+  if(head == nullptr) {
+    // Return early, there isn't anything to pop
+    return;
+  }
+  // Iterate through the list until the next node is the end
+  if(head->next == nullptr) {
+    // The list only has one item, just delete it
+    delete head;
+    // Reset the head pointer
+    head = nullptr;
+  } else {
+    // The list has multiple items, locate the 2nd to last item
+    // Make a copy of the head pointer that we can modify
+    Item* temp_head = head;
+    while(temp_head->next->next != nullptr) {
+      temp_head = temp_head->next;
+    }
+
+    // Delete the last item
+    delete temp_head->next;
+    // Reset the next attribute of the new last item
+    temp_head->next = nullptr;
+
+    // Clean up the temp_head pointer
+    temp_head = nullptr;
+    delete temp_head;
+  }
+}
+```
+
+In order for us to see what the list looks like, we need to create the `list_nodes` function to print them all out. There isn't any new theory here, just a different application:
+
+```C++
+void list_nodes() {
+  std::cout << "\nListing all nodes:" << std::endl;
+  // Make a copy of the head pointer that we can modify
+  Item* temp_head = head;
+  // Iterate though the entire list
+  while(temp_head != nullptr) {
+    // Print out the current item
+    std::cout << temp_head->value << std::endl;
+    // Move along the pointer
+    temp_head = temp_head->next;
+  }
+
+  // Clean up the temp_head pointer
+  temp_head = nullptr;
+  delete temp_head;
+}
+```
+
+And finally, we need to create a destructor that will free the memory of all of the list items when the `SinglyLinkedList` class is deleted. We'll cover constructors and destructors later, but for now, just know that the destructor is called automatically whenever the class is deleted. Destructors are denoted by having the same name as their parent classes, just with a tilde in front and don't have any return type.
+
+```C++
+~SinglyLinkedList() {
+  while(head != nullptr) {
+    pop_back();
+  }
+  delete head;
+}
+```
+
+### Putting it all together
+
+And now, we're done with the `SinglyLinkedList` class! All put together, the class should look like this:
+
+```C++
+#include <iostream>
+
+class SinglyLinkedList {
+ public:
+  void push_front(int value) {
+    // Create a new node
+    Item* node = make_node(value);
+    // Set the next item of the new node to the current head node
+    node->next = head;
+    // Set the new node to be the head node
+    head = node;
+  }
+
+  void pop_front() {
+    if(head == nullptr) {
+     // Return early, there isn't anything to pop
+      return;
+    }
+    // Temporarily store the pointer to the next item in the list
+    Item* temp_head = head->next;
+    // Clean up the current head element
+    delete head;
+    // Reset head
+    head = temp_head;
+  }
+
+  void push_back(int value) {
+    // Create a new node
+    Item* node = make_node(value);
+
+    // If the list is empty, this is really easy
+    if(head == nullptr) {
+      head = node;
+    } else {
+      // Make a copy of the head pointer that we can modify
+      Item* temp_head = head;
+      // Iterate through the list until we reach the end
+      while(temp_head->next != nullptr) {
+        temp_head = temp_head->next;
+      }
+
+      // Make the last item in the list point to the new node
+      temp_head->next = node;
+
+      // Clean up the temp_head pointer
+      temp_head = nullptr;
+      delete temp_head;
+    }
+  }
+
+  void pop_back() {
+    if(head == nullptr) {
+      // Return early, there isn't anything to pop
+      return;
+    }
+    // Iterate through the list until the next node is the end
+    if(head->next == nullptr) {
+      // The list only has one item, just delete it
+      delete head;
+      // Reset the head pointer
+      head = nullptr;
+    } else {
+      // The list has multiple items, locate the 2nd to last item
+      // Make a copy of the head pointer that we can modify
+      Item* temp_head = head;
+      while(temp_head->next->next != nullptr) {
+        temp_head = temp_head->next;
+      }
+
+      // Delete the last item
+      delete temp_head->next;
+      // Reset the next attribute of the new last item
+      temp_head->next = nullptr;
+
+      // Clean up the temp_head pointer
+      temp_head = nullptr;
+      delete temp_head;
+    }
+  }
+
+  void list_nodes() {
+    std::cout << "\nListing all nodes:" << std::endl;
+    // Make a copy of the head pointer that we can modify
+    Item* temp_head = head;
+    // Iterate though the entire list
+    while(temp_head != nullptr) {
+      // Print out the current item
+      std::cout << temp_head->value << std::endl;
+      // Move along the pointer
+      temp_head = temp_head->next;
+    }
+
+    // Clean up the temp_head pointer
+    temp_head = nullptr;
+    delete temp_head;
+  }
+
+  ~SinglyLinkedList() {
+    while(head != nullptr) {
+      pop_back();
+    }
+    delete head;
+  }
+
+ private:
+  // Item template for the singly linked list
+  struct Item {
+    int value;
+    Item* next = nullptr;
+  };
+
+  // Helper for making a node item from a value
+  Item* make_node(int value) {
+    // Make a new node
+    Item* node = new Item();
+    // Assign the new node the given value
+    node->value = value;
+
+    return node;
+  }
+
+  // HEAD of the singly linked list
+  Item* head = nullptr;
+};
+```
+
+Now, to actually use this class, we need a main function and some code. Feel free to stop here and try to write it on your own before looking at the solution below.
+
+```C++
+int main() {
+  SinglyLinkedList newlist;
+  newlist.push_front(10);
+  newlist.push_front(3);
+  newlist.push_back(10000);
+  newlist.push_back(60);
+  newlist.list_nodes();
+  newlist.pop_front();
+  newlist.list_nodes();
+  newlist.pop_back();
+  newlist.list_nodes();
+}
+```
+
+### Running the program
+
+Put these two together in the same file and run. With luck there won't be any syntax errors and the output should mirror:
+
+```shell
+$ g++ test.cc && ./a.out
+
+Listing all nodes:
+3
+10
+10000
+60
+
+Listing all nodes:
+10
+10000
+60
+
+Listing all nodes:
+10
+10000
+$
+```
+
+### Generalizing the SinglyLinkedList with C++ template types
+
+Excellent! Now, as a finishing touch (*and extra lesson*), let's make this class more useful by extending its support to beyond just integers. We can easily do this with templates. Simply put, templates enable code to support many different types of objects and treat them the same. The syntax for creating a basic template type is as follows:
+
+```C++
+template <class T>
+```
+
+Realistically, you could call the template type whatever you want, but calling it T is a common convention used by many C++ programmers. This line is to be placed before the highest level scope that makes use of it, in this case, the `SinglyLinkedList` class.
+
+```C++
+#include <iostream>
+
+template <class T>
+class SinglyLinkedList {
+ ...
+```
+
+Next, we'll replace every instance of the `int` type in the class with `T`, which will become the type stored in the `value` attribute of the `Item` class.
+
+```C++
+#include <iostream>
+
+template <class T>
+class SinglyLinkedList {
+ public:
+  void push_front(T value) {
+    // Create a new node
+    Item* node = make_node(value);
+    // Set the next item of the new node to the current head node
+    node->next = head;
+    // Set the new node to be the head node
+    head = node;
+  }
+
+  void pop_front() {
+    if(head == nullptr) {
+     // Return early, there isn't anything to pop
+      return;
+    }
+    // Temporarily store the pointer to the next item in the list
+    Item* temp_head = head->next;
+    // Clean up the current head element
+    delete head;
+    // Reset head
+    head = temp_head;
+  }
+
+  void push_back(T value) {
+    // Create a new node
+    Item* node = make_node(value);
+
+    // If the list is empty, this is really easy
+    if(head == nullptr) {
+      head = node;
+    } else {
+      // Make a copy of the head pointer that we can modify
+      Item* temp_head = head;
+      // Iterate through the list until we reach the end
+      while(temp_head->next != nullptr) {
+        temp_head = temp_head->next;
+      }
+
+      // Make the last item in the list point to the new node
+      temp_head->next = node;
+
+      // Clean up the temp_head pointer
+      temp_head = nullptr;
+      delete temp_head;
+    }
+  }
+
+  void pop_back() {
+    if(head == nullptr) {
+      // Return early, there isn't anything to pop
+      return;
+    }
+    // Iterate through the list until the next node is the end
+    if(head->next == nullptr) {
+      // The list only has one item, just delete it
+      delete head;
+      // Reset the head pointer
+      head = nullptr;
+    } else {
+      // The list has multiple items, locate the 2nd to last item
+      // Make a copy of the head pointer that we can modify
+      Item* temp_head = head;
+      while(temp_head->next->next != nullptr) {
+        temp_head = temp_head->next;
+      }
+
+      // Delete the last item
+      delete temp_head->next;
+      // Reset the next attribute of the new last item
+      temp_head->next = nullptr;
+
+      // Clean up the temp_head pointer
+      temp_head = nullptr;
+      delete temp_head;
+    }
+  }
+
+  void list_nodes() {
+    std::cout << "\nListing all nodes:" << std::endl;
+    // Make a copy of the head pointer that we can modify
+    Item* temp_head = head;
+    // Iterate though the entire list
+    while(temp_head != nullptr) {
+      // Print out the current item
+      std::cout << temp_head->value << std::endl;
+      // Move along the pointer
+      temp_head = temp_head->next;
+    }
+
+    // Clean up the temp_head pointer
+    temp_head = nullptr;
+    delete temp_head;
+  }
+
+  ~SinglyLinkedList() {
+    while(head != nullptr) {
+      pop_back();
+    }
+    delete head;
+  }
+
+ private:
+  // Item template for the singly linked list
+  struct Item {
+    T value;
+    Item* next = nullptr;
+  };
+
+  // Helper for making a node item from a value
+  Item* make_node(T value) {
+    // Make a new node
+    Item* node = new Item();
+    // Assign the new node the given value
+    node->value = value;
+
+    return node;
+  }
+
+  // HEAD of the singly linked list
+  Item* head = nullptr;
+};
+```
+
+We'll also need to refactor the main function a bit to deal with this. For the sake of it, we'll test two different data types.
+
+```C++
+int main() {
+  // Demo with a double list
+  {
+    SinglyLinkedList<double> newlist;
+    newlist.push_front(10.0);
+    newlist.push_front(3.14159);
+    newlist.push_back(10000.0);
+    newlist.push_back(60.64334583);
+    newlist.list_nodes();
+    newlist.pop_front();
+    newlist.list_nodes();
+    newlist.pop_back();
+    newlist.list_nodes();
+  }
+  // Demo with a std::string list
+  {
+    SinglyLinkedList<std::string> list;
+    list.push_back("Hello this is text.");
+    list.list_nodes();
+    list.pop_front();
+    list.push_front("What is this?");
+    list.list_nodes();
+  }
+}
+```
+
+Notice that the newly added syntax when instantiating the `SinglyLinkedList` class for defining what the template type will be (*the bit within the angle brackets <>*).
+
+The added curly brackets around each of the examples without a control structure like `if`, `else`, `while`, `for`, etc. around it is called an empty scope. Empty scopes do exactly what their name implies; they create an artificial scope, deleting any object instantiated within them after they are completed. These aren't necessary here, but they help to group the code and are incredibly useful in certain instances where the life cycle of an object needs to be controlled more precisely. For that reason, it is a good idea to be able to recognize them and when they are useful.
+
+And thus, our example is completed!
