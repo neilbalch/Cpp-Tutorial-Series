@@ -1,4 +1,4 @@
-# Memory
+# Chapter 2: Memory
 
 ## 2.1: Operations of System RAM
 
