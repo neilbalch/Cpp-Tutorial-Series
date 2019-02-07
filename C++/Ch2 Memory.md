@@ -108,7 +108,7 @@ delete my_heap_int;
 
 All sorts of fun operations can be applied to pointers, such as addition/subtraction and more, allowing for more advanced concepts like type punning, which will be covered later.
 
-## 2.3 Smart Pointers
+## 2.3: Smart Pointers
 
 Pointers like those discussed in section 2.2 are actually more accurately called raw pointers because of their relation to smart pointers. They will henceforth be referred to as such. (*be warned. :)* )
 
@@ -154,7 +154,7 @@ std::unique_ptr<int> a = ptr; // COMPILER ERROR
 std::unique_ptr<int> b = std::move(ptr); // Works
 ```
 
-## 2.4 Linked List example
+## 2.4: Linked List example
 
 Our programming application of memory in this chapter is going to be creating a singly-linked list class.
 
