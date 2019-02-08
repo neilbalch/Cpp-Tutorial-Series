@@ -454,7 +454,7 @@ Again, [this cplusplus.com tutorial](http://www.cplusplus.com/doc/tutorial/polym
 
 ## 3.3:  Enumerations
 
-Wile not being a super crucial type in C++, when enumerations are applicable, they make what they do SO damn easy and easy to read. For that reason alone, they are worth knowing about.
+While not being a super crucial type in C++, when enumerations are applicable, they make what they do SO damn easy and easy to read. For that reason alone, they are worth knowing about.
 
 Fundamentally, enumerations are just an integer variable, but the façade they put up on the front end makes dealing with states so much easier. Say we wanted a class to keep track of what state it was in . (*e.g. processing data, saving data to a file, reading data from a file, et. cetera*) We could just create an integer member variable and assign meaning to each number, (*e.g. -1 means an error occurred, 0 means doing nothing, 1 means reading, 2 means writing, et. cetera*) but that would get clunky over time, and it wouldn't be immediately obvious just from reading the code that that is what is happening.
 
@@ -475,3 +475,114 @@ if(state == State::Stopped) { /*...*/ }
 
 ## 3.4: Lambdas and Function Pointers
 
+Function pointers are another very interesting feature in C++ that allows functions to be passed around as objects. This is especially useful for systems like timers where the program might want the timer to run a bit of code when the timer expires, or other systems where so called "callback" functions are applicable. Function pointers are handled by the `std::function<TYPE(PARAMS...)>` object, contained in the header `functional`. A function pointer can be created from a properly defined function like so:
+
+```C++
+void doSomething(int num) {
+  //...
+}
+
+std::function<void(int)> callback = doSomething;
+```
+
+Note that the template type must match the return type and parameter type list of the function it stores. Then, the function can be called like so:
+
+```C++
+callback(1234);
+```
+
+However, another method for creating function pointers exists: anonymous functions. Also called lambdas, these are a [common concept in many object-oriented languages](https://en.wikipedia.org/wiki/Anonymous_function), allowing functions to be declared without a given name for s specific use. Here's an example of lambda syntax:
+
+```C++
+[CAPTURE](PARAMS) {/* CODE */}
+```
+
+The parameters and code areas are pretty self explanatory, but what's a capture? Well, captures allow for certain aspects of the current scope to be, well, captured into the lambda. For example, if an object in the surrounding scope is imperative to the operation of the lambda, then that object can be captured in the lambda. An example of a lambda with a capture is as follows:
+
+```C++
+int state = 4;
+std::function<void()> callback = [state]() {
+  if(state > 2) std::cout << "yay, the state is greater than two!" << std::endl;
+  else std::cout << "Oh no, the system broke..." << std::endl;
+}
+
+// Much later...
+callback();
+```
+
+Now, there are a couple different methods that can be used for lambda captures:
+
+- Capture by value: *The value of the captured object is recorded and used at the point in time when the lambda is **defined***
+- Capture by reference: *The value of the captured object is recorded and used at the point in time when the lambda is **executed***
+
+An excellent demonstration of this behavior can be found on [crascit.com](https://crascit.com/2015/03/01/lambdas-for-lunch/):
+
+```C++
+int x = 5;
+
+auto copyLambda = [x](){ return x; };		// Capture by value
+auto refLambda  = [&x](){ return x; };  // Capture by reference
+
+std::cout << copyLambda() << std::endl;
+std::cout << refLambda()  << std::endl;
+x = 7;
+std::cout << copyLambda() << std::endl;
+std::cout << refLambda()  << std::endl;
+```
+
+The above code produces the following output:
+
+```shell
+$ g++ ./test.cc && ./a.out
+5
+5
+5
+7
+$
+```
+
+As you can see, the value captured by the reference capture lambda changed by the time it was executed for a second time, while the value capture lambda didn't.
+
+### `this` capture and capture defaults
+
+Lambda captures can contain more than just object names. There are three special capture tools to help make capture syntax more readable:
+
+- `this`: Capture everything in the current class (*therefore only applicable form within a class*) by value (*not allowed to capture `this` by reference*)
+- `=`: Capture all objects in the current scope by value
+- `&`: Capture all objects in the current scope by reference
+
+Once again, [crascit.com](https://crascit.com/2015/03/01/lambdas-for-lunch/) has a very nice example code block to demonstrate this:
+
+```C++
+class Foo {
+  int x;
+ public:
+  Foo() : x(10) {}
+
+  void bar() {
+    // Increment x every time we are called
+    auto lam = [this](){ return ++x; };
+    std::cout << lam() << std::endl;
+  }
+};
+
+Foo foo;
+foo.bar(); // Outputs 11
+foo.bar(); // Outputs 12
+
+int x = 10;
+int y = 14;
+auto lam1 = []()       { return 24; };  // OK: capture nothing
+auto lam2 = [=]()      { return x+y; }; // OK: copy x, copy y
+auto lam3 = [&]()      { return x+y; }; // OK: reference x, reference y
+auto lam4 = [=, &x]()   { return x+y; }; // OK: reference x, copy y
+auto lam5 = [&, x]()    { return x+y; }; // OK: copy x, reference y
+auto lam6 = [&x, =]()   { return x+y; }; // Error: default must be first
+auto lam7 = [=, x]()    { return x+y; }; // Error: both specify copy x
+auto lam8 = [=, this]() { return x+y; }; // Error: both specify copy this
+auto lam9 = [&, &x]()   { return x+y; }; // Error: both specify reference x
+```
+
+The `auto` keyword used here is another useful tool that allows the programmer to have the compiler decide what type the object needs to have, a capability best used sparingly because of the ambiguity it creates in the code for other humans. As demonstrated in the above sample, a multiplicity of captures can be utilized to specify exactly what should be captured and how.
+
+Many programmers make the argument that such "catch all" captures should be used sparingly, an not without necessity because of how they often result in unnecessary objects being captured, wasting memory space and processor cycles, a highly undesirable effect on systems with a speed or memory space crunch. But frankly, with the speed of modern computers, it really doesn't matter in most cases.

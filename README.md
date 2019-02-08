@@ -7,3 +7,5 @@ Repository for Tutorials™ lesson resources
 - `C++/`: @neilbalch's C++ Lessons
   - `C++/Ch1 Basic C++.md`
   - `C++/Ch2 Memory.md`
+  - `C++/Ch3 OOP.md`
+

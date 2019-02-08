@@ -12,9 +12,8 @@
     - thread
     - mutex
 - Language features
-  - Lambdas and anonymous function pointers
-  - ? operator (cover when convenient)
-  - exception handling and the try block
+  - `?` operator (cover when convenient)
+  - exception handling and the `try` block
   - Operator overloading
 - [Iterator linked list](https://github.com/neilbalch/FRC971-Cpp/tree/master/LinkedList)
 
@@ -29,6 +28,6 @@
       - ~~Destructor~~
     - ~~Interfaces and virtual functions~~
   - ~~Enumerations~~
-  - Lambdas and anonymous functions
+  - ~~Lambdas and anonymous functions~~
   - Project: task sequencer, (*like FRC971 Event Loop*)
     - [Delay creator](https://stackoverflow.com/questions/158585/how-do-you-add-a-timed-delay-to-a-c-program)
