@@ -20,4 +20,16 @@
 
 ## Chapter Structure
 
-- Ch 4:
+- Ch 4: Miscellaneous Features
+  - File IO (*fstream*)
+    - try block
+  - Operator overloading
+  - `?` operator
+  - Multi-file projects, split into `.h` and `.cc`
+  - Value categories
+  - Iterators
+    - Project: Iterator linked list
+  - Build systems
+  - More on threading
+    - mutex
+    - shared_ptr
