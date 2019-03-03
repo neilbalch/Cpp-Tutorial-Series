@@ -120,7 +120,7 @@ for(double val : doubles) {
 
 More functions are available to be called of a vector class, which can be found by visiting the [cppreference.com page for `std::vector`](https://en.cppreference.com/w/cpp/container/vector), like `.clear`, `.erase`, `.insert` and more.
 
-### Multidimensional Arrays
+### Multidimensional Arrays... your portal to alternate universes
 
 As promised, we're going to be revisiting ye' old C-style arrays for the purposes of learning about multidimensional arrays. These aren't all too common in C++, hence the less than stellar framework of C++ styled implementations like those that exist for single-dimension arrays. In fact, most of the time, when dealing with multi-dimensional data, it is preferred to use a specialized vector and matrix library like [Armadillo](http://arma.sourceforge.net/), [blaze](https://bitbucket.org/blaze-lib/blaze) or the vastly more popular [eigen](https://github.com/eigenteam/eigen-git-mirror). However, it is sometimes useful to be able to use native multidimensional arrays, so here we go.
 
@@ -283,7 +283,7 @@ The first option seems okay, but the second should result in a syntax error, and
 
 Another important but small bit of information to be had regards the `break` and `continue` keywords. These are applicable in loops, like the `for` and `while`, as well as in a couple other situations.
 
-#### `break`
+#### `break`... everyone's favorite days of the year
 
 Break is applicable in loops as well as the `switch` block. Let's look at its use in loops first.
 
@@ -376,7 +376,7 @@ Notice that we've been putting the keywords `public:` and `private:` into our cl
 
 Child classes have to do with class and struct inheritance, a fun topic in its own right.
 
-### Class Inheritance
+### Class Inheritance... and inevitable Haemophilia 
 
 A principal feature of OOP is what's called [polymorphism](https://en.wikipedia.org/wiki/Polymorphism_(computer_science)), which includes the ability for objects to inherit properties from others. Classes and structs are the posterchildren of this feature. For example, say I have a rectangle class:
 
@@ -410,7 +410,7 @@ and be able to use the `Rectangle` class's `getArea()` member function. The `: p
 
 [This cplusplus.com tutorial](http://www.cplusplus.com/doc/tutorial/inheritance/) goes over inheritance in a far greater depth.
 
-### Interfaces
+### Interfaces: fitting the square peg in the round hole
 
 An interface is a special type of class that creates a blueprint for other classes to be based upon. It creates a set of "virtual" functions that should (*and sometimes must*) be implemented by derived classes, for these virtual functions don't contain a full implementation or any code at all. For example:
 
@@ -601,7 +601,7 @@ terminate called without an active exception
 
 to signify that they were interrupted before they could finish.
 
-### Before  we start using threads...
+### Wait! Before  we start using threads...
 
 Threading is a special feature, as the operating system needs to specifically support multithreading (*the act of having more than one thread running at a time*) For this reason, the C++ standard doesn't outright include full support for threading so that it remains compatible with operating systems that don't support multithreading; it contains function definitions, but will fail to link (*a part of the compilation process*) without something extra to provide the method for interacting with the multithreading features of the particular platform.
 

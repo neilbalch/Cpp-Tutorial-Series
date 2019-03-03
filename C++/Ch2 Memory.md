@@ -8,7 +8,7 @@ System memory, often referred to by its proper name Random Access Memory (*RAM*)
 
 Later on in the journey through C++, we'll learn about the CPU's own super high speed memory which is even faster still, (*and again more expensive per unit*) called the CPU cache, which is used in somewhat similar manner to the RAM, but that's literally a topic for another day.
 
-### RAM model
+### Anatomy of the RAM animal
 
 It is convenient (*and mostly correct*) to think of the RAM as being a list of binary (*0 or 1*) digits in byte groups, each entry organized by a corresponding address, used for reading and writing data to the right places.
 
@@ -81,7 +81,7 @@ Figure 2.2.1: Asterisk and ampersand definition table.
 
 We'll get to what a reference is in a bit. They're a whole different set of crazy, and best left alone until required. Generally, they're considered to be improper to use unless necessary because they syntactically appear to be just like normal variables, but behave in a similar way to pointers sometimes, ending up confusing everyone!
 
-### `nullptr`
+### `nullptr`... ERROR: *DOES NOT COMPUTE*
 
 No talk of pointers is complete without the classic `nullptr`. `nullptr`, as some can probably deduce, is a keyword that represents absolutely nothing, hence the name that begins with null. Well, that isn't exactly true; it is a pointer that resolves (*points*) to the 0th location in memory (*`00000000` in our 8-bit computer example*). The 0th location in memory is special, no matter what system, because it is most often a protected location, meaning that no program (*not even the OS*) is allowed to write to it. Therefore, it represents absolutely nothing, since no one is allowed to put anything there.
 
@@ -108,7 +108,7 @@ delete my_heap_int;
 
 All sorts of fun operations can be applied to pointers, such as addition/subtraction and more, allowing for more advanced concepts like type punning, which will be covered later.
 
-## 2.3: Smart Pointers
+## 2.3: Smart Pointers save you from endless misery
 
 Pointers like those discussed in section 2.2 are actually more accurately called raw pointers because of their relation to smart pointers. They will henceforth be referred to as such. (*be warned. :)* )
 
