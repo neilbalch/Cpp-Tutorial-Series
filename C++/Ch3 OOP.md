@@ -623,7 +623,7 @@ Setting up such implementations of C++ multithreading differs between operating 
 
 #### Unix-based platforms: *Linux and MacOS*
 
-Most operating systems based on [Unix, a highly foundational OS built by Bell Labs in 1969](https://en.wikipedia.org/wiki/Unix), such as all Linux distributions and MacOS derive their threading capabilities from implementations of the [NPTL (*Native POSIX Thread Library*)](https://en.wikipedia.org/wiki/Native_POSIX_Thread_Library) or similar APIs based on the POSIX Thread spec, often shortened to `pthread`, a term you might recognize from the above error message.
+Most operating systems based on [Unix, a highly foundational OS built by Bell Labs in 1969](https://en.wikipedia.org/wiki/Unix), such as all Linux distributions and MacOS derive their threading capabilities from implementations of the [NPTL (*Native POSIX Thread Library*)](https://en.wikipedia.org/wiki/Native_POSIX_Thread_Library) or similar APIs based on the [POSIX](https://en.wikipedia.org/wiki/POSIX) Thread spec, often shortened to `pthread`, a term you might recognize from the above error message.
 
 Using `pthread` is simple, requiring it to be "linked" into the compilation process. In `g++`, just add the `-pthread` or `lpthread` flag. (*the `l` stands for link*)
 
