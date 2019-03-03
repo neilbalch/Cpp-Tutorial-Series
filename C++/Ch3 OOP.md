@@ -585,4 +585,266 @@ auto lam9 = [&, &x]()   { return x+y; }; // Error: both specify reference x
 
 The `auto` keyword used here is another useful tool that allows the programmer to have the compiler decide what type the object needs to have, a capability best used sparingly because of the ambiguity it creates in the code for other humans. As demonstrated in the above sample, a multiplicity of captures can be utilized to specify exactly what should be captured and how.
 
-Many programmers make the argument that such "catch all" captures should be used sparingly, an not without necessity because of how they often result in unnecessary objects being captured, wasting memory space and processor cycles, a highly undesirable effect on systems with a speed or memory space crunch. But frankly, with the speed of modern computers, it really doesn't matter in most cases.
+Many programmers make the argument that such "catch all" captures should be used sparingly, an not without necessity because of how they often result in unnecessary objects being captured, wasting memory space and processor cycles, a highly undesirable effect on systems with a speed or memory space crunch. But frankly, with the speed of modern computers, it really doesn't smatter in most cases.
+
+## 3.5: Threading
+
+Every program, application, script, etc. on a computer when executed launches one (*or more*) "thread"s of execution. Each thread operates pseudo-independently from one another, only sharing resources when explicitly told how and without complete knowledge of each other. Threading is responsible for the multitasking paradigm that we rely on so heavily with modern computers, enabling us to have more complex programs and open multiple programs concurrently, a capability completely essential to our use of technology in the present day. Launching a new thread, also called a process, is useful incredibly useful when trying to make two things happen at the same time, such as waiting for user input from a GUI (*graphical user interface*) and doing calculations in the background simultaneously.
+
+### Theory
+
+At a low-level, threads operate wildly differently based on which operating system is being programmed for, but the basic idea is the same. I really like the [explanation given by @Leos313 on this Stack Overflow question](https://stackoverflow.com/a/38145183/3339274), so I'll briefly paraphrase it here. The main thread (*initial program launched by the user*) can at any point create a new thread to run aside it, giving it a routine to perform after which it will exit and cease to exist. The main thread can check up on the threads it launches, (*"worker threads"*) checking to see if they are complete, but it can't do much more without some fancy footwork. If the main thread ends before the worker threads, the workers will also exit, generating an error:
+
+```
+terminate called without an active exception
+```
+
+to signify that they were interrupted before they could finish.
+
+### Before  we start using threads...
+
+Threading is a special feature, as the operating system needs to specifically support multithreading (*the act of having more than one thread running at a time*) For this reason, the C++ standard doesn't outright include full support for threading so that it remains compatible with operating systems that don't support multithreading; it contains function definitions, but will fail to link (*a part of the compilation process*) without something extra to provide the method for interacting with the multithreading features of the particular platform.
+
+Without providing the required materials, the C++ linker will produce [an error like this when trying to compile the program](https://stackoverflow.com/q/21211980/3339274):
+
+```shell
+Linux/MacOS
+
+tmp/cc8sIoP4.o: In function `std::thread::thread<void (Test::*)(), Test*>(void (Test::*&&)(), Test*&&)':
+test2.cc:(.text._ZNSt6threadC2IM4TestFvvEJPS1_EEEOT_DpOT0_[_ZNSt6threadC5IM4TestFvvEJPS1_EEEOT_DpOT0_]+0x33): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+
+Windows:
+
+./test.cc:8:3: error: ‘thread’ is not a member of ‘std’
+```
+
+Setting up such implementations of C++ multithreading differs between operating systems.
+
+#### Unix-based platforms: *Linux and MacOS*
+
+Most operating systems based on [Unix, a highly foundational OS built by Bell Labs in 1969](https://en.wikipedia.org/wiki/Unix), such as all Linux distributions and MacOS derive their threading capabilities from implementations of the [NPTL (*Native POSIX Thread Library*)](https://en.wikipedia.org/wiki/Native_POSIX_Thread_Library) or similar APIs based on the POSIX Thread spec, often shortened to `pthread`, a term you might recognize from the above error message.
+
+Using `pthread` is simple, requiring it to be "linked" into the compilation process. In `g++`, just add the `-pthread` or `lpthread` flag. (*the `l` stands for link*)
+
+```shell
+$ g++ test.cc -pthread
+OR
+$ g++ test.cc -lpthread
+```
+
+#### Windows
+
+Windows users (*again*) have a harder experience, as the MinGW package that must be installed for `g++` to be used must be installed with an implementation of POSIX `pthread`s to be able to compile the C++ `thread` header.
+
+Such resources as [this Stack Overflow post](https://stackoverflow.com/q/15718904/3339274) and the linked-to [MinGW build](https://sourceforge.net/projects/mingwbuilds/files/host-windows/releases/4.8.0/32-bit/threads-posix/sjlj/) exist for those who are willing to weather the storm of potential hurdles present here, however this is another example of a way in which the newly-introduced [Windows Subsystem for Linux (*WSL*)](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux) for Windows 10 briefly discussed in Chapter 1 takes the cake in terms of simplicity. As its name describes, because it runs a modified Linux (*specifically Ubuntu*) OS on top of Windows, it is able to make full use of the standard `pthread` implementations that ordinary Linux OSes can.
+
+### Implementation
+
+Due to the relatively simple API inherent to threading due to the limited ability of the main thread to interact with the worker threads, the actual API of the C++ `thread` header is pretty simple.
+
+```C++
+#include <thread>
+#intlude <iostream>
+
+void function() {
+  std::cout << "This is the worker thread" << std::endl; 
+}
+
+int main() {
+  std::thread worker; // No new thread is created yet, as there is nothing for it to do...
+  worker = std::thread(function); // A new thread is created, and the function "function" runs
+  std::cout << "This is the main thread" << std::endl;
+  
+  // If the worker thread is still running, we need to make sure that it terminates before the main thread to avoid the "terminate called without an active exception" message.
+  if(worker.joinable()) { // Check to see if the worker thread is still running
+    worker.join(); // If it is, wait for it to terminate on its own
+  }
+  return 0;
+}
+```
+
+Possible output:
+
+```shell
+$ g++ test.cc -pthread && ./a.out
+This is the worker thread
+This is the main thread
+$
+```
+
+Note that this only one of the possible outputs generatable by the above example. Because a new thread is spawned, there is really no defined behavior as to which of the threads will execute which commands in order. Depending on the circumstances, it may very well be possible that the main thread prints its line before the worker thread.
+
+Threads can also be spawned from functions that require parameters:
+
+```c++
+void function(int a, int b, int c, /*...*/) {
+	//...
+}
+
+//...
+
+std::thread worker(function, 1, 2, 3, /*...*/);
+```
+
+The return type of the function, however, should be void, as all other return types are promptly ignored by the new thread. Since there is no simple way for the worker thread to communicate back with the main thread, there is no way for the C++ compiler to get the returned value back to the caller.
+
+## 3.6: Event Loop Example
+
+An [event loop](https://en.wikipedia.org/wiki/Event_loop) is a construct that is central to the vast majority of computer programs, helping them manage sequences of events and tasks in an orderly fashion. Different parts of the program schedule events with the event loop, such as "let me know in 10 minutes", "let me know when the internet comes back", etc. with the expectation that the event loop is on top of what is going on and will "wake up" the program that asked to be notified.
+
+There are almost an infinite number of variations and permutations possible to an event loop and surrounding infrastructure, but we're going to create a rather simple event loop that sequences events given to it, i.e. executes events one after another. To do this, we're going to enlist concepts from this chapter, including `std::vector`, lambdas, and more.
+
+Like we did last chapter, let's think about this project in terms of the required API, which this time is pretty simple:
+
+- `addTask(std::function<void()>)`: adds the given function to the list of tasks to execute
+- `run()`: start processing the events already in the list
+- `stop()`: interrupt the actions of `run()`
+- `clearAll()`: get rid of any tasks already added
+
+The list of tasks inside the class will take the form of an `std::vector` so that we can dynamically add more tasks as they come in.
+
+### Let's get started writing!
+
+```c++
+#include <functional>
+#include <thread>
+#include <vector>
+
+class EventLoop {
+ public:
+  EventLoop() { stopWork_ = false; }
+
+  // Push a new task onto the end of the queue
+  void addTask(std::function<void()> task) { tasks_.push_back(task); }
+
+  void run() {
+    // Reset the stopWork_ flag so that the worker doesn't immediately stop
+    stopWork_ = false;
+    // Only start a new worker thread if it isn't already running 
+    if(!worker_.joinable()) worker_ = std::thread(&EventLoop::processList, this);
+  }
+
+  // Stop executing tasks
+  void stop() { stopWork_ = true; }
+
+  // Clear the queue
+  void clearAll() {
+    // Make sure that the thread isn't running before we modify the queue
+  	stop();
+    tasks_.clear();
+  }
+
+  // Wait for the worker thread to exit before letting the class destroy itself
+  ~EventLoop() {
+    if(worker_.joinable()) worker_.join();
+  }
+
+ private:
+  // Function to be run by the worker thread
+  void processList() {
+    //...
+  }
+
+  // Task queue to be processed by the worker thread
+  std::vector<std::function<void()>> tasks_;
+  // Worker thread
+  std::thread worker_;
+  // Communicates to the worker thread that it should stop working when set to true
+  bool stopWork_;
+};
+
+int main() {
+  //...
+  return 0;
+}
+```
+
+In this initial C++ code stub for the program we're writing, the basic foundation of the `EventLoop` class is put forward. The only new syntax here is present when we set up the worker thread:
+
+`std::thread(&EventLoop::processList, this);`
+
+`worker_` gets its code from the `processList()` member function, and [special syntax is required for passing a member function into the `std::thread` constructor](https://stackoverflow.com/q/11057800/3339274). The Stack Overflow post [linked to](https://stackoverflow.com/questions/11057800/passing-member-functions-to-stdthread) contains a technical answer for why this syntax is required, but it basically boils down to the following. Because there is a possibility that the member function modifies or makes use of other member objects in the class, which does happen to be the case for us, we need to specify which instance of the `EventLoop` class the `processList` function we want to be calling is in.
+
+Thus, we take the pointer (*`&`*) to the `processList` function contained in the `EventLoop` class, for which the namespace operator (*`::`*) is used.
+
+The `this` parameter ensures the worker thread access to the member objects it needs to run, namely `tasks_` and `stopWork_` by passing in a pointer to the current class. It also serves the purpose of identifying which instance  of the `EventLoop` class we want to be using.
+
+### Filling in the gaps
+
+Next, let's fill in the empty space we left for the `processList` function.
+
+```c++
+void processList() {
+  // Loop while there are elements in the vector and we aren't supposed to stop
+  while (tasks_.size() != 0 && !stopWork_) {
+    // Call the first task in the vector
+    tasks_[0]();
+    // Erase the first task in the vector (.begin() points to the first element of the vector)
+    tasks_.erase(tasks_.begin());
+  }
+}
+```
+
+This is a pretty simple function. It loops through every item in the `tasks_` vector (*by erasing the first element each iteration, thus removing already processed tasks from the queue*)
+
+And finally, let's write the `main()` function. Here, let's write a simple test of the `EventLoop` class, testing every function.
+
+```C++
+// Add this on top:
+#include <chrono>
+#include <iostream>
+
+int main() {
+  EventLoop el;
+  
+  // Add 5 elements to the queue
+  for (int i = 0; i < 5; i++) {
+    el.addTask([i]() { std::cout << i << std::endl; });
+  }
+  // Clear the elements we just added
+  el.clearAll();
+  
+  // Add 5 more elements to the queue
+  for (int i = 5; i < 10; i++) {
+    el.addTask([i]() { std::cout << i << std::endl; });
+  }
+
+  // Run the event loop
+  el.run();
+  
+  // Wait for a bit before stopping the event loop
+  using namespace std::chrono_literals;
+  std::this_thread::sleep_for(100ms);
+  el.stop();
+
+  return 0;
+}
+```
+
+This too is a pretty simple function, just calling each of the functions in the class to test their functionality. The only new part is the code to wait for 100 milliseconds.
+
+```C++
+using namespace std::chrono_literals;
+std::this_thread::sleep_for(100ms);
+```
+
+`std::this_thread`, provided by the `thread` header, gives us a way to pause execution (*called blocking*) of the current thread for the given duration, in this case, 100 milliseconds. 
+
+The `using namespace std::chrono_literals` line allows us to write 100 milliseconds as `100ms` instead of what it stands for: `std::chrono::milliseconds(100)`. This is because [the `std::chrono_literals` namespace defines `[INTEGER]ms` to be equivalent to `std::chrono::milliseconds(100)`](https://en.cppreference.com/w/cpp/header/chrono). This handy shortcut is really nice, especially considering that other literals like it are made available in the same namespace. (*`us` (microsecond), `ns` (nanosecond), `s`, `min`, `h`*)
+
+### Possible output
+
+```shell
+$ g++ test.cc -pthread
+5
+6
+7
+8
+9
+$
+```
+
+Again, note that this is only one of the many possible outputs. Depending on many other uncontrollable factors on the computer while the program is running, some of the outputs may be omitted because they weren't able to be run by the worker thread in the 100ms that the main thread allowed before stopping the event loop.
+
+And thus, our example is completed!
