@@ -4,7 +4,7 @@
 
 - Advanced C++ Compilation
   - Build Systems (Bazel)
-  - .h and .cc split
+  - [.h and .cc split](http://cse230.artifice.cc/lecture/splitting-code.html)
 - C++ std library features
   - [fstream](https://github.com/neilbalch/FRC971-Cpp/blob/master/SimpleKalmanFilter.cc)
   - [Multithreading](https://github.com/neilbalch/FRC971-Cpp/blob/master/MultithreadingExample.cc)
@@ -14,6 +14,7 @@
   - `?` operator (cover when convenient)
   - exception handling and the `try` block
   - Operator overloading
+  - casting
 - Value categories
 - [Iterator linked list](https://github.com/neilbalch/FRC971-Cpp/tree/master/LinkedList)
 - [Qt?](https://www.qt.io/)
@@ -33,3 +34,4 @@
   - More on threading
     - mutex
     - shared_ptr
+  - Casting
