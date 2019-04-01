@@ -4,7 +4,7 @@
 
 Complete C++ documentation can be found at the sites [en.cppreference.com/w](http://en.cppreference.com/w/) and [cplusplus.com](http://www.cplusplus.com/). The search tools on these sites work well when you know what you are looking for, so searching on Google and then clicking links to these sites is the option most likely to return a positive result. However, to a newer C++ programmer, the site can seem quite daunting, so we will try to provide a basic understanding here. In addition to this, the YouTube channel [TheCherno has an excellent playlist on fundamental to advanced C++ topics](http://www.youtube.com/watch?v=18c3MTX0PK0&list=PLlrATfBNZ98dudnM48yfGUldqGD0S4FFb) that we highly recommend for anyone who wants to learn more about tricky topics explained in an understandable manner.
 
-If you don’t want to set up a code environment on the terminal yet, you can always practice C++ with [cpp.sh](www.cpp.sh) or a similar web based C++ compiler. The only caveat to this approach is that there is no easy way to link multiple files together, and your programs would need to be in one file.
+If you don’t want to set up a code environment on the terminal yet, you can always practice C++ with [cpp.sh](http://www.cpp.sh) or a similar web based C++ compiler. The only caveat to this approach is that there is no easy way to link multiple files together, and your programs would need to be in one file.
 
 ### Style Guides
 
