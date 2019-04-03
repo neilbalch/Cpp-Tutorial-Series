@@ -22,8 +22,8 @@
 ## Chapter Structure
 
 - Ch 4: Commonly Used Features
-  - File IO (*fstream*)
-    - try block
+  - File IO (*`fstream`*)
+    - `try` block
   - ?` operator
   - Casting
   - Multi-file projects, split into `.h` and `.cc`
