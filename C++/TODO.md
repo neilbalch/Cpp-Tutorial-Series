@@ -21,17 +21,19 @@
 
 ## Chapter Structure
 
-- Ch 4: Miscellaneous Features
+- Ch 4: Commonly Used Features
   - File IO (*fstream*)
     - try block
-  - Operator overloading
-  - `?` operator
+  - ?` operator
+  - Casting
   - Multi-file projects, split into `.h` and `.cc`
+    - [Whyyyyyy?](https://stackoverflow.com/questions/1305947/why-does-c-need-a-separate-header-file)
+  - Build systems
+- Ch 5: Advanced Concepts (*multi-part?*)
+  - Operator overloading
   - Value categories
   - Iterators
     - Project: Iterator linked list
-  - Build systems
   - More on threading
     - mutex
     - shared_ptr
-  - Casting
