@@ -4,12 +4,12 @@
 
 - Advanced C++ Compilation
   - Build Systems (Bazel)
-  - [.h and .cc split](http://cse230.artifice.cc/lecture/splitting-code.html)
+  - [`.h` and `.cc` split](http://cse230.artifice.cc/lecture/splitting-code.html)
 - C++ std library features
-  - [fstream](https://github.com/neilbalch/FRC971-Cpp/blob/master/SimpleKalmanFilter.cc)
+  - [`fstream`](https://github.com/neilbalch/FRC971-Cpp/blob/master/SimpleKalmanFilter.cc)
   - [Multithreading](https://github.com/neilbalch/FRC971-Cpp/blob/master/MultithreadingExample.cc)
-    - shared_ptr
-    - mutex
+    - `shared_ptr`
+    - `mutex`
 - Language features
   - `?` operator (cover when convenient)
   - exception handling and the `try` block
@@ -22,12 +22,12 @@
 ## Chapter Structure
 
 - Ch 4: Commonly Used Features
-  - File IO (*`fstream`*)
+  - [File IO (*`fstream`*)](https://www.tutorialspoint.com/cplusplus/cpp_files_streams.htm)
     - `try` block
-  - ?` operator
+  - `?` operator
   - Casting
   - Multi-file projects, split into `.h` and `.cc`
-    - [Whyyyyyy?](https://stackoverflow.com/questions/1305947/why-does-c-need-a-separate-header-file)
+    - [Why?](https://stackoverflow.com/questions/1305947/why-does-c-need-a-separate-header-file)
   - Build systems
 - Ch 5: Advanced Concepts (*multi-part?*)
   - Operator overloading
@@ -35,5 +35,5 @@
   - Iterators
     - Project: Iterator linked list
   - More on threading
-    - mutex
-    - shared_ptr
+    - `mutex`
+    - `shared_ptr`
