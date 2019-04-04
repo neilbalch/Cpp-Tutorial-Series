@@ -6,11 +6,11 @@
 
 ## Chapter Structure
 
-- Ch 4: Commonly Used Features
-  - [File IO (*`fstream`*)](https://www.tutorialspoint.com/cplusplus/cpp_files_streams.htm)
-    - `try` block and exception handling
-  - `?` operator
-  - Casting
+- Ch 4: Common Features
+  - ~~[File IO (*`fstream`*)](https://www.tutorialspoint.com/cplusplus/cpp_files_streams.htm)~~
+  - ~~`try` block and exception handling~~
+  - ~~`?` operator~~
+  - Casting and Implicit conversions
   - Multi-file projects, split into `.h` and `.cc`
     - [Why?](https://stackoverflow.com/questions/1305947/why-does-c-need-a-separate-header-file)
     - [Why?](http://cse230.artifice.cc/lecture/splitting-code.html)
