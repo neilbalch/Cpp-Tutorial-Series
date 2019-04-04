@@ -110,7 +110,7 @@ int main() {
 
 But even still, be aware that usage and implementation of exception throwing is highly frowned upon in many contexts and organizations. Beware.
 
-### 4.3 Why Does This Exist`?`
+## 4.3: Why Does This Exist`?`
 
 All hail the immense and total power of the inline `if` statement! The `?` operator functions as a sort of inline `if` statement. Let's see if it's usage is apparent from an example:
 
@@ -141,4 +141,141 @@ std::cout << number > 5 ? "BIG!" : "small" << std::endl;
 ```
 
 Which would you rather write? The latter is *significantly* shorter and more concise, resulting in faster writing of code and, arguably, easier comprehension of what will happen in the end for someone who is reading quickly. Keep this trick in mind. It's not for use everywhere, but when used appropriately, it is a GOD tool. Good places to use it are in situations like the one depicted above and in object instantiations.
+
+## 4.4:  Fitting Square Pegs in Round Holes
+
+Like it does in other aspects, C++ has two different methods by which to change objects between types, one of which it inherited from C and one that it established itself.
+
+### C-Style Casting
+
+These conversions are pretty self-explanatory:
+
+```C++
+double a = 3.14159;
+int b = 123456;
+
+double c = (double)b;
+int d = (int)a;
+```
+
+In the cases depicted above, the casting occurs when an alternate type is declared within the parentheses. In the case of converting a `double` to an `int`, where there is a loss of precision due to the inability of an integer variable to hold decimal places, the double is truncated (*cut short*) at the decimal place, effectively rounding down, to make the value fit properly.
+
+#### The Dark Side of C-Style Casts
+
+However, nothing in life is perfect. There are [caveats to performing casts with the syntax described above](https://stackoverflow.com/a/1609185/3339274).
+
+1. It's really hard to search for instances of a C-style cast in a code base
+2. It's sometimes difficult to understand exactly what the author intended to have the cast do, especially in more advanced and obscure situations
+3. C-style casts aren't checked very well by the compiler, sometimes allowing undefined behaviors to crop up, especially when casting between more complicated objects
+
+However, these objections don't really matter for simple data types like those shown in the example above. Only caution against using C-style casts for more interesting and complicated conversions, such as those involving pointers, classes, and other objects like those.
+
+That said...
+
+### C++ Casting
+
+C++ introduces four different types of casts, each for [slightly different purposes](https://stackoverflow.com/a/332086/3339274). Ordered in ascending levels of rarity and nicheness:
+
+- `static_cast<>`
+- `const_cast<>`
+- `dynamic_cast<>`
+- `reinterpret_cast<>`
+
+The template parameter that these casts take (*inside the `<>`*) is the desired target type, or what would have been put within the parentheses of a C-style cast. The following explanations are paraphrased from [this Stack Overflow post](https://stackoverflow.com/a/332086/3339274), which does an excellent job explaining all of the nuances of each type of cast.
+
+#### `static_cast<>`
+
+`static_cast<>` is by far the most commonly used of them all. It is essentially a direct implementation of the same functionality traditionally found in a C-style cast, just without the caveats. In fact, it is so common that a lot of the time, situations where a `static_cast<>` would be appropriate are automatically handled by implicit conversions, a topic that will be covered in a bit.
+
+It can also be used to convert classes and structs up the inheritance hierarchy, i.e. from the base class to the child class. Conversions down the ranks, i.e. from the child class to the parent class, are handled automatically, without the necessity to use a `static_cast<>`. However, since the cast is performed at compile time, only objects that are directly related through a parent-child relationship are able to be processed in this manner. Otherwise, use `dynamic_cast<>`.
+
+#### `const_cast<>`
+
+`const_cast<>` is arguably the simplest and most niche of them all. It's sole purpose is to remove the "constancy" (*if you will*) from an object, allowing one to be used in a non-const expression. Simple as that, for most intents and purposes.
+
+#### `dynamic_cast<>`
+
+The uses of this type of cast, and `reinterpret_cast<>` for that matter, are very specific and highly limited. Thus, explanation of the nuances is difficult.
+
+The most useful ways in which to use `dynamic_cast<>` is with pointers to polymorphic objects, which is to say classes or structs that make use of inheritance (**possibly also virtual functions*) at the same time.
+
+Take this example program: (*slightly adapted from [learncpp.com](https://www.learncpp.com/cpp-tutorial/12-9-dynamic-casting/)*)
+
+```C++
+#include <iostream>
+#include <string>
+ 
+class Base {
+ protected:
+	int m_value;
+ 
+ public:
+	Base(int value) : m_value(value) {}
+	virtual ~Base() {}
+};
+ 
+class Derived : public Base {
+ protected:
+	std::string m_name;
+
+ public:
+	Derived(int value, std::string name) : Base(value), m_name(name) {}
+	const std::string& getName() { return m_name; }
+};
+ 
+Base* getObject(bool bReturnDerived) {
+	if (bReturnDerived)
+		return new Derived(1, "Apple");
+	else
+		return new Base(2);
+}
+ 
+int main() {
+	Base *b = getObject(true);
+
+	Derived *d = dynamic_cast<Derived*>(b); // use dynamic cast to convert Base pointer into Derived pointer
+
+  std::cout << "The name of the Derived is: " << d->getName() << '\n'; 
+	delete b;
+	return 0;
+}
+```
+
+In this admittedly contrived situation, we have a `Derived` class that inherits from the `Base` class. We also have a `getObject()` function that returns a `Base*` that has the ability to point either to a `Base` object or a `Derived` object disguised as a `Base` object.
+
+In the `main()` function, we instantiate a `Base` pointer, and then want to call the `getName()` member function implemented by the `Derived` class. Believe it or not, we have two options: both `static_cast<>` and `dynamic_cast<>` could work here. However, as it is evaluated at compile time, `static_cast<>` in this situation wouldn't provide any checks to make sure that the conversion would make sense or produce a meaningful result. This is where `dynamic_cast<>` comes in as a conversion processed at runtime, offering the opportunity to address what `static_cast<>` doesn't.
+
+Thus, we perform a `dynamic_cast<>` to `Derived*` so we can then call the `getName()` member function. However, there's a problem with this code; with one line change to how `*b` is instantiated, the `dynamic_cast<>` will fail spectacularly, and we will end up with trying to dereference `nullptr`, a cardinal sin and runtime error generator.
+
+If `getObject(true)` is changed to `getObject(false)`, the `Base*` that gets returned no longer actually points to an instance of a `Derived` class. That means that the `dynamic_cast<>` will fail (*by returning `nullptr`*) because it has no way of converting the `Base*` to a `Derived*`. Think about it: if you were to try to perform the conversion, how would you do it? There isn't any way to account for the fact that you'd be missing important data, namely `m_name`.
+
+To protect against this, we change the `main()` function like so:
+
+```C++
+int main() {
+	Base *b = getObject(true);
+
+	Derived *d = dynamic_cast<Derived*>(b); // use dynamic cast to convert Base pointer into Derived pointer
+
+  if(d != nullptr) std::cout << "The name of the Derived is: " << d->getName() << '\n'; 
+	delete b;
+	return 0;
+}
+```
+
+This way, if the `dynamic_cast<>` fails, we will know about it and not try to dereference `nullptr`  when printing out the name of the `Derived` class. This check is absolutely necessary whenever using `dynamic_cast<>` to avoid dereferencing `nullptr`.
+
+#### `reinterpret_cast<>`
+
+To quote [a Stack Overflow post](https://stackoverflow.com/a/332086/3339274): 
+
+> `reinterpret_cast` is the most dangerous cast, and should be used very sparingly. It turns one type directly into another — such as casting the value from one pointer to another, or storing a pointer in an `int`, or all sorts of other nasty things.
+
+This is the case because of what the `reinterpret_cast<>` actually does behind the scenes. Somewhat literally, it just acts as if the type of the original object *was* the type it's converting to, just replacing the label. As an even greater scare, this is what [another Stack Overflow user says](https://stackoverflow.com/a/43273907/3339274):
+
+> If you don't know what `reinterpret_cast` stands for, don't use it. If you will need it in the future, you will know.
+
+For this reason, we're not going to go into depth into this one. Heed the advice of your elders, kids.
+
+### Implicit Conversions
 
