@@ -8,7 +8,7 @@ C++ has three objects defined in the STL (*Standard Template Library*) to help w
 - `ofstream`: Exclusively usable for file *write* and *creation* operations only.
 - `ifstream`: Exclusively usable for file *read* operations.
 
-Theoretically the workflow for interacting with files on the filesystem is as follows, no matter the platform or language used: `Open File --> Do stuff to the file --> Close File`. 
+Theoretically the workflow for interacting with files on the filesystem is as follows, no matter the platform or language used: `Open File --> Do stuff to the file --> Close File`.
 
 The act of "*opening*" a file does two things: it initializes the file stream object (*one of the ones introduced above*) and sets a flag that prohibits other applications from making severe changes to the file, e.g. removing it. This flag is set until the file is "*closed*", which results in the changes being dumped back into the file, the un-initialization of the file stream object, and the aforementioned resetting of the file change flag. Along with this, other processes are set in motion, such as a notification sent to all processes listening for the file to be modified, but that is a more advanced topic to be discussed at a later date.
 
@@ -84,7 +84,7 @@ As we've seen, the `fstream` object is perfectly capable of doing most tasks one
 
 ## 4.2: Please `try` to Like This Part
 
-In all honesty, the `try` block is traditionally a very useful piece of kit when there is a possibility of a segment of code producing an exception or runtime error. Many other languages have this feature, including Java, Python, JavaScript, and more. In general, despite the fact that C++ has a rather solid framework for throwing and catching exceptions, it isn't all that common to run across a behavior like this in many code bases. 
+In all honesty, the `try` block is traditionally a very useful piece of kit when there is a possibility of a segment of code producing an exception or runtime error. Many other languages have this feature, including Java, Python, JavaScript, and more. In general, despite the fact that C++ has a rather solid framework for throwing and catching exceptions, it isn't all that common to run across a behavior like this in many code bases.
 
 People consider it messy to start throwing exceptions, especially in applications that need to continue running even if an exception is generated, due to how any uncaught exceptions will terminate the program instantly. To that effect, it is actually really difficult to create a situation where a runtime error will be thrown just by using the C++ STL. Like, really difficult.
 
@@ -100,8 +100,8 @@ double divide(double a, double b) {
 
 int main() {
   try {
-	  std::cout << divide(5.0, 2.0) << std::endl; // Fine, no tripping the exception
-  	std::cout << divide(5.0, 2.0) << std::endl; // Error, trips the exception
+    std::cout << divide(5.0, 2.0) << std::endl; // Fine, no tripping the exception
+    std::cout << divide(5.0, 2.0) << std::endl; // Error, trips the exception
   } catch(const char* error) { // Catch an exception in the form of a const char* (analagous to a String type)
     std::cout << "Error! " << error << std::endl;
   }
@@ -121,7 +121,7 @@ std::cout << number > 5 ? "BIG!" : "small" << std::endl;
 
 The code above would print the word "BIG" to the terminal. Do you see what just happened? Let's generalize the `?` operator's usage.
 
-`[CONDITION] ? [VAL IF TRUE] :[VAL IF FALSE]`
+`[CONDITION] ? [VAL IF TRUE] : [VAL IF FALSE]`
 
 If the condition evaluates to true, then the result will be whatever is contained between the `?` and the `:`. Otherwise, the result will be what comes after the `:`.
 
@@ -141,3 +141,4 @@ std::cout << number > 5 ? "BIG!" : "small" << std::endl;
 ```
 
 Which would you rather write? The latter is *significantly* shorter and more concise, resulting in faster writing of code and, arguably, easier comprehension of what will happen in the end for someone who is reading quickly. Keep this trick in mind. It's not for use everywhere, but when used appropriately, it is a GOD tool. Good places to use it are in situations like the one depicted above and in object instantiations.
+

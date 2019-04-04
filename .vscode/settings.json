@@ -3,10 +3,13 @@
     "bitshift",
     "cout",
     "endl",
+    "fstream",
+    "ifstream",
     "iostream",
     "multithreading",
     "newlist",
     "nullptr",
+    "ofstream",
     "struct"
   ]
 }
