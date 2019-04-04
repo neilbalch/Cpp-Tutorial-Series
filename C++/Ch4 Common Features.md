@@ -253,13 +253,13 @@ To protect against this, we change the `main()` function like so:
 
 ```C++
 int main() {
-	Base *b = getObject(true);
+  Base *b = getObject(true);
 
-	Derived *d = dynamic_cast<Derived*>(b); // use dynamic cast to convert Base pointer into Derived pointer
+  Derived *d = dynamic_cast<Derived*>(b); // use dynamic cast to convert Base pointer into Derived pointer
 
   if(d != nullptr) std::cout << "The name of the Derived is: " << d->getName() << '\n'; 
-	delete b;
-	return 0;
+  delete b;
+  return 0;
 }
 ```
 
