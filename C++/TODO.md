@@ -2,6 +2,7 @@
 
 ## Desired Topics
 
+- Recursion
 - [Qt?](https://www.qt.io/)
 
 ## Chapter Structure
@@ -16,6 +17,9 @@
     - [Why?](http://cse230.artifice.cc/lecture/splitting-code.html)
   - Build systems
 - Ch 5: Advanced Concepts (*multi-part?*)
+  - `explicit` functions
+  - `inline` functions
+  - `volatile` objects
   - Operator overloading
   - Value categories
   - Iterators
