@@ -204,16 +204,16 @@ Take this example program: (*slightly adapted from [learncpp.com](https://www.le
 ```C++
 #include <iostream>
 #include <string>
- 
+
 class Base {
  protected:
   int m_value;
- 
+
  public:
   Base(int value) : m_value(value) {}
   virtual ~Base() {}
 };
- 
+
 class Derived : public Base {
  protected:
   std::string m_name;
@@ -222,20 +222,20 @@ class Derived : public Base {
   Derived(int value, std::string name) : Base(value), m_name(name) {}
   const std::string& getName() { return m_name; }
 };
- 
+
 Base* getObject(bool bReturnDerived) {
   if (bReturnDerived)
     return new Derived(1, "Apple");
   else
     return new Base(2);
 }
- 
+
 int main() {
   Base *b = getObject(true);
 
   Derived *d = dynamic_cast<Derived*>(b); // use dynamic cast to convert Base pointer into Derived pointer
 
-  std::cout << "The name of the Derived is: " << d->getName() << '\n'; 
+  std::cout << "The name of the Derived is: " << d->getName() << '\n';
   delete b;
   return 0;
 }
@@ -257,7 +257,7 @@ int main() {
 
   Derived *d = dynamic_cast<Derived*>(b); // use dynamic cast to convert Base pointer into Derived pointer
 
-  if(d != nullptr) std::cout << "The name of the Derived is: " << d->getName() << '\n'; 
+  if(d != nullptr) std::cout << "The name of the Derived is: " << d->getName() << '\n';
   delete b;
   return 0;
 }
@@ -267,7 +267,7 @@ This way, if the `dynamic_cast<>` fails, we will know about it and not try to de
 
 #### `reinterpret_cast<>`
 
-To quote [a Stack Overflow post](https://stackoverflow.com/a/332086/3339274): 
+To quote [a Stack Overflow post](https://stackoverflow.com/a/332086/3339274):
 
 > `reinterpret_cast` is the most dangerous cast, and should be used very sparingly. It turns one type directly into another — such as casting the value from one pointer to another, or storing a pointer in an `int`, or all sorts of other nasty things.
 
@@ -279,3 +279,91 @@ For this reason, we're not going to go into depth into this one. Heed the advice
 
 ### Implicit Conversions
 
+Believe it or not, we have been making use of the C++ feature of implicit conversion before. It is a feature that acts in the background to help us. Like C-style casting, this behavior was inherited from C, where it was first introduced. Here's an example:
+
+```C++
+void doSomething(double value) { /* ... Do work ... */ }
+
+doWork(5);
+```
+
+See what's happening here? The `doSomething` function wants to take in a `double` parameter, but it was passed an `int` type. The compiler then implicitly converted the `int` type to a `double` type.
+
+If instead the syntax was trying to go the other way, say from a `double` to an `int`, the conversion would work the same, this time with the compiler truncating the `double` at the decimal point, effectively rounding down to the nearest whole number.
+
+There are far more instances in C++ where implicit conversions appear, but this is the most common mode of operation in general.
+
+## 4.5: Just... split the difference
+
+This section is perhaps the most important in the entire chapter. Nearly all C++ code bases out there make use of this practice: splitting code between `.h` header files and `.cc` source files, both of the same name. (*except for the obvious difference in file extension*)
+
+Also sometimes formatted to be `.hpp` and `.cpp` files due to how the `.h` and `.c` files are normally associated with the C language, these files each have a separate but distinct role:
+
+- `.h` (*also `.hpp`*) files are responsible for object definitions, without the implementing code.
+- `.cc` (*also `.cpp`*) files are responsible for object implementations, defined in the corresponding `.h` or `.hpp` file.
+
+The reasons for doing this are twofold: it helps us humans read the code more easily (*which will hopefully become apparent soon once we look at how this works*) and it helps the compiler check the code for idiosyncrasies that would cause errors. [This article](http://cse230.artifice.cc/lecture/splitting-code.html) goes into depth on how this works and does a good job explaining why this is common practice in C++.
+
+### Example file set
+
+Here we have a simple example: (*modified a bit from the above article*)
+
+`rectangle.h`:
+
+```C++
+#ifndef RECTANGLE_H
+#define RECTANGLE_H
+
+class Rectangle {
+ public:
+  double width;
+  double height;
+
+  double area();
+};
+
+#endif
+```
+
+`rectangle.cc`:
+
+```C++
+#include "rectangle.h"
+
+double Rectangle::area() {
+  return width * height;
+}
+```
+
+Okey, what's going on here? Let's analyze the `rectangle.h` file more closely first.
+
+#### Header File
+
+The first two lines and last line, the ones with the hash symbols (*`#`*) in front, are a formality that helps the compiler deal with the possibility that the same code may be included multiple times in a code base.
+
+For example, if instead of a rectangle class this was a math class, it is forseeable that many parts of the code may want to include this capability. Due to how the `#include` preprocessor directive (*part of the compiler*) works, it is just a straight copy and paste operation. This means that the code from the included file will just be placed verbatim in place of the `#include` call.
+
+If unprotected from redefinition, it is possible to have multiple locations include the same file and end up with a situation where there are object redefinitions, serious errors that can screw up a code base dramatically.
+
+So, how does it work? Any line with a hash symbol (*`#`*) in front is a preprocessor directive. These calls are processed before the compiler really gets started, hence the name *pre*processor.
+
+`#ifndef` (*and the matching `#ifdef`*) check to see if a specific symbol is defined yet. It's the preprocessor's version of an `if` statement. Symbols are any object type or preprocessor definition. (*`#define`*)
+
+Luckily for us in the case of this example, the preprocessor definition hasn't occurred yet. (*HINT: it's defined in the next line!*) Thus, our condition which essentially evaluates to "does `RECTANGLE_H` exist yet?" becomes true and the lines between the `#ifndef` and `#endif` lines are kept in the file. If the condition wvaluated to false, the lines in between would be omitted.
+
+The next line with the `#define` makes sure that future includes of this file won't duplicate the code by defining the symbol used in the previous line. By convention, the symbol name is the file path relative to the root directory of the project with the slashes and periods converted to underscores and all of the characters in upper case. For example:
+
+- `BIN_COMMON_TIME_H` for `./bin/common/time.h`
+- `SRC_RX_PPMSUMD_H` for `./src/rx/ppmsumd.h`
+
+The class definition in `rectangle.h` shouldn't be anything new with the exception of the `double area();` line. Here, the function is defined but not implemented. This is what makes this feature special, it enables the compact definition to be laid out in the header file with the implementation decided later. As it stands `area()` is un-callable because the compiler has no idea what to do with a call to the `area()` function.
+
+#### Source File
+
+This, however, is resolved in `rectangle.cc`. The first line is very necessary, telling the compiler that it is related to the `rectangle.h` header and implements the objects defined there.
+
+Next comes the definition of the `Rectangle` class's `area()` function. Note the usage of the scope operator (*`::`*) that we last saw in relation to namespaces. Other than that quirk, the function definition remains the same.
+
+### More on why
+
+Imagine that instead of being short, the `Rectangle` class was longer. Soon, with the function definitions encapsulated in a separate file, it becomes far easier to read and understand what the class does just by reading the header file. This is one of the most important reasons why this practice is so universal.
