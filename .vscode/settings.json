@@ -1,15 +1,23 @@
 {
   "cSpell.words": [
+    "bazel",
     "bitshift",
+    "cmake",
     "cout",
     "endl",
+    "executables",
     "fstream",
+    "ifdef",
+    "ifndef",
     "ifstream",
     "iostream",
+    "kitware",
+    "mkdir",
     "multithreading",
     "newlist",
     "nullptr",
     "ofstream",
-    "struct"
+    "struct",
+    "structs"
   ]
 }

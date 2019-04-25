@@ -47,7 +47,7 @@ For example:
 #include <fstream>
 
 fstream file;
-file.open("test.txt", ios::in | ios::out | ios::app); // Opens the file "./test.txt" for reading and writing. Lines written to the file will be appended to the end isntead of replacing what is already there.
+file.open("test.txt", ios::in | ios::out | ios::app); // Opens the file "./test.txt" for reading and writing. Lines written to the file will be appended to the end instead of replacing what is already there.
 ```
 
 ### File Stream Operations
@@ -102,7 +102,7 @@ int main() {
   try {
     std::cout << divide(5.0, 2.0) << std::endl; // Fine, no tripping the exception
     std::cout << divide(5.0, 2.0) << std::endl; // Error, trips the exception
-  } catch(const char* error) { // Catch an exception in the form of a const char* (analagous to a String type)
+  } catch(const char* error) { // Catch an exception in the form of a const char* (analogous to a String type)
     std::cout << "Error! " << error << std::endl;
   }
 }
@@ -174,7 +174,7 @@ That said...
 
 ### C++ Casting
 
-C++ introduces four different types of casts, each for [slightly different purposes](https://stackoverflow.com/a/332086/3339274). Ordered in ascending levels of rarity and nicheness:
+C++ introduces four different types of casts, each for [slightly different purposes](https://stackoverflow.com/a/332086/3339274). Ordered in ascending levels of rarity and niche nature:
 
 - `static_cast<>`
 - `const_cast<>`
@@ -367,3 +367,104 @@ Next comes the definition of the `Rectangle` class's `area()` function. Note the
 ### More on why
 
 Imagine that instead of being short, the `Rectangle` class was longer. Soon, with the function definitions encapsulated in a separate file, it becomes far easier to read and understand what the class does just by reading the header file. This is one of the most important reasons why this practice is so universal.
+
+## 3.6: Build Systems
+
+Up until this point, we've been using [`g++`, a part of the GCC (*GNU Compiler Collection*)](https://gcc.gnu.org/) to compile and run our C++ code. However, there are several other options, namely [`clang`](http://clang.llvm.org/) which despite the odd sounding name (*literally abbreviated for C-language*) is very powerful.
+
+There also exist more complicated build systems that automate much of the tedious work that is necessary when working with `g++` or `clang` on their own, which for the most part require each piece of the code base to be compiled separately.
+
+Arguably, the most popular C++ build systems in the wild are [CMake](https://cmake.org/), [Ninja](https://ninja-build.org/) and [Bazel](https://bazel.build/) in ascending order of complexity. Many of such build systems are also compatible with other mainstream programming languages. For example, Bazel is compatible with Java, C++, Android, iOS, Go and many more development tools.
+
+This section will introduce both CMake and Bazel.
+
+### The humble build file
+
+Both CMake and Bazel, as well as many other build systems, make use of so called "build files" to tell the compiler what it needs to do in order to successfully assemble the project. These "build files" are placed one per directory of the project. CMake uses `CMakeLists.txt` files, while Bazel uses `BUILD` files. Both have different methods of formatting, but they both accomplish the same task.
+
+Within build systems, there are two types of compilable objects (*called targets*) that can be declared in build files: executables and libraries. Executables are runnable outputs, the same idea as the outputs we've been generating with `g++`, compiled into binaries. Libraries are a more complicated topic, but these are compilable outputs that need to be implemented within an executable to be used.
+
+Technically, the difference between executables and libraries is that executables have an entry point and libraries don't. Entry points are where the program begins to run, which in C++ is the `main()` function. Only executable targets with an entry point (*and only one*) may be run directly.
+
+Executables are the most common kind of output to generate in C++, so we're only going to discuss those. Feel free to look up how to compile dynamic libraries with CMake and Bazel on your own prerogative.
+
+### CMake
+
+CMake, an open source build system from Kitware, is where we will start.
+
+First, like with `g++`, we must first acquire and install CMake from the internet. Fortunately, [CMake's download page](https://cmake.org/download/) provides installers for most operating systems. On Linux, CMake can be obtained via the package manager, usually accessible by the name `cmake`.
+
+An excellent getting started tutorial for CMake already exists on [riptutorial.com](https://riptutorial.com/cmake). The following example will be paraphrased from there.
+
+The first step is to make a simple project to build. (*DUH!*) Let's practice multi-file projects.
+
+`main.cc`:
+
+```C++
+#include "foo.h"
+
+int main() {
+  foo();
+  return 0;
+}
+```
+
+`foo.h`:
+
+```C++
+#ifndef FOO_H
+#define FOO_H
+
+void foo();
+#endif
+```
+
+`foo.cc`:
+
+```C++
+#include <iostream>
+#include "foo.h"
+
+void foo() {
+  std::cout << "Hello World!" << std::endl;
+}
+```
+
+Alright, that was pretty simple. Now let's looks at the associated `CMakeLists.txt`.
+
+`CMakeLists.txt`:
+
+```CMake
+cmake_minimum_required(VERSION 2.4)
+
+project(hello_world)
+
+include_directories(${PROJECT_SOURCE_DIR})
+add_executable(app main.cc foo.cc)
+```
+
+So, here we go... The first line just sets the minimum version of `cmake` that must be installed to run this build script. No fancy stuff here, just some configuration details.
+
+The second line is where things start to matter. `project(hello_world)` declares a new CMake project called "hello_world". For the most part, this name doesn't matter. Just make it understandable and reasonable.
+
+The third line then sets and include directory. This is where the compiler will look for the header files requested in the C++ files. For now, the only include directory is the root of the project, which is accessible in the build file with the `$(PROJECT_SOURCE_DIR)` variable.
+
+And finally, the last line, sets up the executable that will be output at the end of compilation. The first parameter, `app`, sets the name of the output binary and the secondary parameters, `main.cc` and `foo.cc` set up the C++ source files that must be compiled to create the binary. Note that there must be one and only one `main()` function in all of the source files included in this list. A separate executable must be instantiated to support another entry point.
+
+Now, to use this build file and compile the project, let's use the `cmake` command. There's actually a few required steps:
+
+```shell
+$ mkdir build                   # Create a new directory for intermediate build files, only do this once
+$ cmake -E chdir build cmake .. # Tell CMake to generate the build environment, only run this after changing "CMakeList.txt" files
+$ cmake --build build           # Tell CMake to compile the project
+$
+```
+
+After running the last command, a binary file will be available to run in the `./build` directory. The name of the executable will be the same as the one set in the `CMakeList.txt` file, in our case, `app`. So...
+
+```shell
+$ # Continue from the previous section
+$ ./build/app
+Hello World!
+$
+```
