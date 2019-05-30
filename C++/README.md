@@ -12,3 +12,5 @@
 - `Ch4 Common Features`: UNFINISHED Examining more critical and common features likely to be seen in C++ code bases
   - Primary author: @neilbalch
   - Project: *TBD*
+
+Source files from chapter examples and projects are located in the corresponding examples directory. e.g., examples from chapter 1 are located in `./Ch1 Examples`

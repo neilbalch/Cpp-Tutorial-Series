@@ -273,6 +273,8 @@ still does the same thing as the code above. Combining the two conditions with t
 At this point, your code for this program should look like this:
 
 ```C++
+#include <iostream>
+
 int main() {
   // Running sum
   int sum = 0;

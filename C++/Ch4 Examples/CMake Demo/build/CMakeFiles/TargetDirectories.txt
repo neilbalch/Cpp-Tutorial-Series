@@ -1,0 +1,3 @@
+/home/neil/cmaketest/build/CMakeFiles/rebuild_cache.dir
+/home/neil/cmaketest/build/CMakeFiles/app.dir
+/home/neil/cmaketest/build/CMakeFiles/edit_cache.dir
