@@ -1,5 +1,11 @@
 # Cpp-Tutorial-Series (*C++*)
 
+## Synopsis
+
+C++ tutorial series (*originally*) made for the MVHS CS Club, but now maintained independently.
+
+## Repository map
+
 - `Ch1 Basic C++.md`: Intro to C++ and fundamental concepts
   - Project: [*Project Euler Problem 1*](https://projecteuler.net/problem=1)
 - `Ch2 Memory.md`: Intro to memory management and related tools
